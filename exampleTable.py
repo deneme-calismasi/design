@@ -15,6 +15,8 @@ randomlist3 = random.sample(range(1500, 1565), 10)
 
 randomlist4 = random.sample(range(1500, 1565), 10)
 
+randomlist5 = random.sample(range(1500, 1565), 10)
+
 data1 = {'Country': ['USA', 'CA', 'GER', 'UK', 'FR', 'TR', 'SPA', 'ITA', 'BEL', 'AUS'],
          'GDP_Per_Capita': randomlist
          }
@@ -36,28 +38,15 @@ data4 = {'Interest_Rate': [4, 4.5, 5, 5.5, 6.25, 6.5, 7, 8, 7.5, 8.5],
 
 df4 = DataFrame(data4, columns=['Interest_Rate', 'Stock_Index_Price'])
 
+data5 = {'Interest_Rate': [4, 4.5, 5, 5.5, 6.25, 6.5, 7, 8, 7.5, 8.5],
+         'Stock_Index_Price': randomlist5
+         }
+
+df5 = DataFrame(data5, columns=['Interest_Rate', 'Stock_Index_Price'])
+
 root = tk.Tk()
 root.title("test it is")
 root.grid()
-
-df = pd.DataFrame({
-    'A': [1, 2, 3, 4, 5, 6, ],
-    'B': [1, 1, 2, 2, 3, 3, ],
-    'C': [1, 2, 3, 1, 2, 3, ],
-    'D': [1, 1, 1, 2, 2, 2, ],
-})
-
-root.title('PandasTable Example')
-
-frame = tk.Frame(root)
-frame.pack(side=tk.TOP, fill=tk.BOTH)
-
-pt = Table(frame, showtoolbar=True, showstatusbar=True)
-# pt = Table(frame, dataframe=df)
-pt.show()
-
-pt.columncolors['A'] = 'red'
-pt.columncolors['B'] = 'green'
 
 figure1 = plt.Figure(figsize=(5, 6), dpi=100)
 ax1 = figure1.add_subplot(111)
@@ -79,6 +68,7 @@ figure3 = plt.Figure(figsize=(5, 4), dpi=100)
 ax3 = figure3.add_subplot(111)
 ax3.scatter(df3['Interest_Rate'], df3['Stock_Index_Price'], color='g')
 ax3.scatter(df4['Interest_Rate'], df4['Stock_Index_Price'], color='b')
+ax3.scatter(df5['Interest_Rate'], df5['Stock_Index_Price'], color='r')
 scatter3 = FigureCanvasTkAgg(figure3, root)
 scatter3.get_tk_widget().pack(side=tk.RIGHT, fill=tk.BOTH)
 ax3.legend(['Stock_Index_Price'])
@@ -86,16 +76,35 @@ ax3.set_xlabel('Interest Rate')
 ax3.set_title('Interest Rate Vs. Stock Index Price')
 
 
+
+
+
+
+
+
+menu = Menu(root)
+root.config(menu=menu)
+filemenu = Menu(menu)
+menu.add_cascade(label='File', menu=filemenu)
+filemenu.add_command(label='New')
+filemenu.add_command(label='Open...')
+filemenu.add_separator()
+filemenu.add_command(label='Exit', command=root.quit)
+helpmenu = Menu(menu)
+menu.add_cascade(label='Help', menu=helpmenu)
+helpmenu.add_command(label='About')
+mainloop()
+
+"""
+
 def randnum(event):
     import random
     value = random.randint(1, 10)
     print(value)
     updateDisplay(value)
 
-
 def updateDisplay(myString):
     displayVariable.set(myString)
-
 
 button_1 = Button(root, text="test")
 button_1.bind("<Button-1>", randnum)
@@ -113,6 +122,8 @@ m1.add(m2)
 top = Scale(m2, orient=HORIZONTAL)
 m2.add(top)
 
+
+
 w = Scale(root, from_=0, to=42)
 w.pack()
 w = Scale(root, from_=0, to=200, orient=HORIZONTAL)
@@ -121,20 +132,9 @@ w.pack()
 w = Spinbox(root, from_=0, to=10)
 w.pack()
 
-menu = Menu(root)
-root.config(menu=menu)
-filemenu = Menu(menu)
-menu.add_cascade(label='File', menu=filemenu)
-filemenu.add_command(label='New')
-filemenu.add_command(label='Open...')
-filemenu.add_separator()
-filemenu.add_command(label='Exit', command=root.quit)
-helpmenu = Menu(menu)
-menu.add_cascade(label='Help', menu=helpmenu)
-helpmenu.add_command(label='About')
-mainloop()
 
-"""
+
+
 master = Tk()
 w = Scale(master, from_=0, to=42)
 w.pack()
