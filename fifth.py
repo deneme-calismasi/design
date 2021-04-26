@@ -6,7 +6,24 @@ from pandas import DataFrame
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import random
-# from pyModbusTCP.client import ModbusClient
+from itertools import count
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+'''
+from pyModbusTCP.client import ModbusClient
+
+c = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
+
+c.open()
+
+regs = c.read_holding_registers(0, 10)
+if regs:
+    print(regs)
+else:
+    print("read error")
+'''
 
 
 def get_random_number():
@@ -55,21 +72,25 @@ root.title("Machine's Temperatures")
 root.grid()
 # root.geometry("1200x1200")
 
-figure1 = plt.Figure(figsize=(4, 4), dpi=100)
-ax1 = figure1.add_subplot(111)
-bar1 = FigureCanvasTkAgg(figure1, root)
-bar1.get_tk_widget().grid(row=14, column=10)
-df1 = df1[['Machine', 'Temperature']].groupby('Machine').sum()
-df1.plot(kind='bar', legend=True, ax=ax1)
-ax1.set_title('Machine Vs. Temperature')
+plt.style.use('fivethirtyeight')
 
-figure2 = plt.Figure(figsize=(4, 4), dpi=100)
-ax2 = figure2.add_subplot(111)
-line2 = FigureCanvasTkAgg(figure2, root)
-line2.get_tk_widget().grid(row=14, column=12)
-df2 = df2[['Machine', 'Temperature']].groupby('Machine').sum()
-df2.plot(kind='line', legend=True, ax=ax2, color='r', marker='o', fontsize=10)
-ax2.set_title('Machine Vs. Temperature')
+x_vals = []
+y_vals = []
+
+index = count()
+
+
+def animate(i):
+    x_vals.append(get_random_string(3))
+    y_vals.append(round(get_random_number(), 2))
+
+    plt.plot(x_vals, y_vals)
+
+
+ani = FuncAnimation(plt.gcf(), animate, interval=1000)
+
+plt.tight_layout()
+plt.show()
 
 menu = Menu(root)
 root.config(menu=menu)
