@@ -1,19 +1,11 @@
 from tkinter import *
 from random import randint
-from pyModbusTCP.client import ModbusClient
 
 # these two imports are important
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import time
 import threading
-
-c = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
-
-c.open()
-
-regs = c.read_holding_registers(0, 10)
-
 
 continuePlotting = False
 
@@ -27,12 +19,12 @@ def change_state():
 
 
 def data_points():
-    f = regs
+    f = open("data.txt", "w")
     for i in range(10):
         f.write(str(randint(0, 10)) + '\n')
     f.close()
 
-    f = regs
+    f = open("data.txt", "r")
     data = f.readlines()
     f.close()
 
