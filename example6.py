@@ -1,5 +1,6 @@
 import pylab
 from pylab import *
+import math
 
 xAchse = pylab.arange(0, 100, 1)
 yAchse = pylab.array([0] * 100)
@@ -22,7 +23,7 @@ Ta = 0.01
 fa = 1.0 / Ta
 fcos = 3.5
 
-Konstant = cos(2 * pi * fcos * Ta)
+Konstant = math.cos(2 * math.pi * fcos * Ta)
 T0 = 1.0
 T1 = Konstant
 

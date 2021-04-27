@@ -80,7 +80,7 @@ def animate(i, xs, ys):
 
 
 # Set up plot to call animate() function periodically
-ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=1000)
+ani = animation.FuncAnimation(fig,  animate, fargs=(xs, ys), interval=1000)
 
 
 def on_key_press(event):
