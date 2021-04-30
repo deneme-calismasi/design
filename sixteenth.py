@@ -58,7 +58,7 @@ index = count()
 
 
 def animate(i, xs, ys):
-    temp_c = round(get_random_number(), 2)
+    temp_c = round(data_as_float, 2)
 
     # Add x and y to lists
     xs.append(next(index))

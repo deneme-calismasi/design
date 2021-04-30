@@ -10,7 +10,7 @@ import numpy as np
 from pyModbusTCP.client import ModbusClient
 from itertools import count
 
-c = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
+c = ModbusClient(host="192.40.50.107", port=10000, unit_id=1, auto_open=True)
 
 c.open()
 
@@ -50,7 +50,7 @@ root.grid()
 
 figure1 = plt.figure()
 plt.style.use('fivethirtyeight')
-ax = figure1.add_subplot(1, 1, 1)
+ax = figure1.add_subplot(1, 1, 1) # C
 xs = []
 ys = []
 
@@ -104,7 +104,7 @@ treev.column("3", width=120, minwidth=30, anchor='c')
 
 treev.heading("1", text="ID")
 treev.heading("2", text="Sensor No")
-treev.heading("3", text="Temperature")
+treev.heading("3", text="Temperature °C")
 
 start_range = 0
 
