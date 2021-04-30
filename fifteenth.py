@@ -2,7 +2,6 @@ import random
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
-import datetime as dt
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import tkinter
@@ -15,14 +14,24 @@ c = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
 
 c.open()
 
-start = 1
-start_range = 30
-
-regs = c.read_holding_registers(0, start_range)
+regs = c.read_holding_registers(0, 100)
 if regs:
     print(regs)
 else:
     print("read error")
+
+n = 0
+
+for n in range(99):
+    regs[n], regs[n + 1] = regs[n + 1], regs[n]
+
+dec_array = regs
+
+data_bytes = np.array(dec_array, dtype=np.uint16)
+data_as_float = data_bytes.view(dtype=np.float32)
+
+start = 1
+start_range = 50
 
 
 def get_random_number():
@@ -31,13 +40,12 @@ def get_random_number():
 
 value = [[num for num in range(start, start + start_range)],
          [num for num in range(start, start + start_range)],
-         regs]
+         data_as_float]
 
 data = np.array(value).T.tolist()
-print(data)
 
 root = tk.Tk()
-root.title("Machine's Temperatures")
+root.title("Sensor's Temperatures")
 root.grid()
 
 figure1 = plt.figure()
@@ -62,11 +70,11 @@ def animate(i, xs, ys):
     plt.xticks(rotation=45, ha='right')
     plt.subplots_adjust(bottom=0.30)
     plt.title('Temperature over Time')
-    plt.ylabel('Temperature (deg C)')
-    plt.xlim(1, 30)
+    plt.ylabel('Temperature °C')
+    plt.xlim(1, 50)
 
 
-canvas = FigureCanvasTkAgg(figure1, master=root)  # A tk.DrawingArea.
+canvas = FigureCanvasTkAgg(figure1, master=root)
 canvas.draw()
 canvas.get_tk_widget().pack(side=tkinter.RIGHT, fill=tkinter.BOTH, expand=1)
 
@@ -95,7 +103,7 @@ treev.column("2", width=120, minwidth=30, anchor='c')
 treev.column("3", width=120, minwidth=30, anchor='c')
 
 treev.heading("1", text="ID")
-treev.heading("2", text="Machine")
+treev.heading("2", text="Sensor No")
 treev.heading("3", text="Temperature")
 
 start_range = 0
