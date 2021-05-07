@@ -10,7 +10,7 @@ import numpy as np
 from pyModbusTCP.client import ModbusClient
 from itertools import count
 
-c = ModbusClient(host="192.40.50.107", port=10000, unit_id=1, auto_open=True)
+c = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
 
 c.open()
 

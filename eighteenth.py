@@ -31,27 +31,7 @@ dec_array = regs
 data_bytes = np.array(dec_array, dtype=np.uint16)
 data_as_float = data_bytes.view(dtype=np.float32)
 
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-mydb = myclient["Modbus_Database"]
-
-myclient.drop_database('Modbus_Database')
-
-"""
-mycol = mydb["collection1"]
-
-record = {'image_ids': data_as_float}
-x = mycol.insert_one(record)
-
-print(x)
-
-datas1 = mycol.find_one()
-
-print(datas1)
-
-print(myclient.list_database_names())
-
-print(mydb.list_collection_names())
-"""
+print(data_as_float)
 
 start = 1
 start_range = 50
@@ -63,12 +43,34 @@ def get_random_number():
 
 value = [[num for num in range(start, start + start_range)],
          [num for num in range(start, start + start_range)],
-         datas1]
+         data_as_float]
 
 data = np.array(value).T.tolist()
 
+myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+mydb = myclient["Modbus_Database"]
+
+myclient.drop_database('Modbus_Database')
+
+"""
+mycol = mydb["collection1"]
+
+record = {'image_ids': data}
+x = mycol.insert_one(record)
+
+# print(x)
+
+data1 = mycol.find_one()
+
+print(data1)
+"""
+
+print(myclient.list_database_names())
+
+print(mydb.list_collection_names())
+
 root = tk.Tk()
-root.title("Sensor's Temperatures")
+root.title("Sensor's Temperatures °C")
 root.grid()
 
 figure1 = plt.figure()

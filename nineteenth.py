@@ -10,6 +10,7 @@ import numpy as np
 from pyModbusTCP.client import ModbusClient
 import pymongo
 from itertools import count
+import datetime
 
 L2 = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
 
@@ -22,36 +23,19 @@ else:
     print("read error")
 
 n = 0
+data_count = 0
 
-for n in range(99):
-    regs[n], regs[n + 1] = regs[n + 1], regs[n]
+for n in range(50):
+    data_count = n * 2
+    regs[data_count], regs[data_count + 1] = regs[data_count + 1], regs[data_count]
 
 dec_array = regs
 
 data_bytes = np.array(dec_array, dtype=np.uint16)
 data_as_float = data_bytes.view(dtype=np.float32)
 
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-mydb = myclient["Modbus_Database"]
-
-myclient.drop_database('Modbus_Database')
-
-"""
-mycol = mydb["collection1"]
-
-record = {'image_ids': data_as_float}
-x = mycol.insert_one(record)
-
+x = datetime.datetime.now()
 print(x)
-
-datas1 = mycol.find_one()
-
-print(datas1)
-
-print(myclient.list_database_names())
-
-print(mydb.list_collection_names())
-"""
 
 start = 1
 start_range = 50
@@ -63,12 +47,46 @@ def get_random_number():
 
 value = [[num for num in range(start, start + start_range)],
          [num for num in range(start, start + start_range)],
-         datas1]
+         data_as_float]
 
 data = np.array(value).T.tolist()
+# print(data)
+
+products = data
+arr = []
+for product in products:
+    vals = {}
+    vals["Sensor No"] = str(int(product[1]))
+    vals["Temp"] = str(product[2])
+    vals["Time"] = str(x)
+    arr.append(vals)
+
+myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+mydb = myclient["Modbus_Database"]
+
+# myclient.drop_database('Modbus_Database')
+
+mycol = mydb["collection1"]
+
+record_data = arr
+data1 = mycol.insert_many(record_data)
+
+myquery1 = {'Sensor No': '2'}
+
+# for data_find in mycol.find():
+#    print(data_find)
+mydoc = mycol.find(myquery1)
+
+for x in mydoc:
+    print(x)
+
+# print(myclient.list_database_names())
+
+# print(mydb.list_collection_names())
+
 
 root = tk.Tk()
-root.title("Sensor's Temperatures")
+root.title("Sensor's Temperatures °C")
 root.grid()
 
 figure1 = plt.figure()
@@ -132,7 +150,7 @@ treev.heading("3", text="Temperature °C")
 start_range = 0
 
 for record in data:
-    treev.insert("", index='end', iid=start_range, values=(record[0], record[1], record[2]))
+    treev.insert("", index='end', iid=start_range, values=(int(record[0]), int(record[1]), record[2]))
     start_range += 1
 
 treev = ttk.Style()
