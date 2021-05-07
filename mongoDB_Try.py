@@ -29,25 +29,25 @@ mydb = myclient["Modbus_Database"]
 
 myclient.drop_database('Modbus_Database')
 
-mycol = mydb["collection1"]
+# mycol = mydb["collection1"]
 
-mydict = {"_id": 1, "name": "John", "address": "Highway 37"}
+# mydict = {"_id": 1, "name": "John", "address": "Highway 37"}
 
-print(mydict)
+# print(mydict)
 
-x = mycol.insert_one(mydict)
+# x = mycol.insert_one(mydict)
 
 print(myclient.list_database_names())
 
 print(mydb.list_collection_names())
 
-print(x)
+# print(x)
 
-data_find = mycol.find_one()
+# data_find = mycol.find_one()
 
-print(data_find)
+# print(data_find)
 
-res_array = np.array(list(data_find.items()))
+# res_array = np.array(list(data_find.items()))
 
 # printing the converted array
-print(res_array)
+# print(res_array)

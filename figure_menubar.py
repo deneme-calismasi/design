@@ -19,7 +19,8 @@ from tkinter import ttk
 import time  # sleeping
 from winsound import Beep  # beeping when the test ends
 
-from menubar import MenuBar
+
+# from menubar import MenuBar
 
 
 class MainWindow(tk.Frame):

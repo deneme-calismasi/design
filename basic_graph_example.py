@@ -1,6 +1,7 @@
 __author__ = 'Dania'
 
 import matplotlib
+
 matplotlib.use('TkAgg')
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg

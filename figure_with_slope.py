@@ -1,4 +1,3 @@
-'''
 import tkinter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -179,6 +178,3 @@ root.protocol("WM_DELETE_WINDOW", _quit)  # thanks aurelienvlg
 root.after(100, SinwaveformGenerator)
 root.after(100, RealtimePloter)
 tkinter.mainloop()
-
-'''
-
