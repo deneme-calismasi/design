@@ -94,20 +94,24 @@ root = tk.Tk()
 root.title("Sensor's Temperatures °C")
 root.grid()
 
-sensor_number = [x['Sensor No'] for x in documents]
-temp_number = [x['Temp'] for x in documents]
-
 figure1 = plt.figure()
 plt.style.use('fivethirtyeight')
-ax = figure1.add_subplot(1, 1, 1)
+ax = figure1.add_subplot(1, 1, 1)  # C
+xs = []
+ys = []
+
+index = count()
 
 
-def animate():
-    ax.scatter(sensor_number, temp_number)
+def animate(i, xs, ys):
+    temp_c = round(get_random_number(), 2)
 
-    ax.set_xlabel("Sensor No")
-    ax.set_ylabel("Temp")
-    ax.plot(sensor_number, temp_number, color='blue', marker='o', markerfacecolor='red')
+    # Add x and y to lists
+    xs.append(next(index))
+    ys.append(temp_c)
+
+    ax.clear()
+    ax.plot(xs, ys, color='blue', marker='o', markerfacecolor='red')
 
     plt.xticks(rotation=45, ha='right')
     plt.subplots_adjust(bottom=0.30)
@@ -124,7 +128,7 @@ toolbar = NavigationToolbar2Tk(canvas, root)
 toolbar.update()
 canvas.get_tk_widget().pack(side=tkinter.RIGHT, fill=tkinter.BOTH, expand=1)
 
-ani = animation.FuncAnimation(figure1, animate, fargs=(sensor_number, temp_number), interval=1000)
+ani = animation.FuncAnimation(figure1, animate, fargs=(xs, ys), interval=1000)
 
 treev = ttk.Treeview(root)
 
