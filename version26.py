@@ -35,7 +35,6 @@ data_bytes = np.array(dec_array, dtype=np.uint16)
 data_as_float = data_bytes.view(dtype=np.float32)
 
 time_data = dt.datetime.now().strftime('%H:%M:%S')
-print(time_data)
 
 start = 1
 start_range = 50
@@ -43,17 +42,15 @@ start_range = 50
 value = [[num for num in range(start, start + start_range)],
          [num for num in range(start, start + start_range)],
          data_as_float]
-print("value :", value)
 
 data = np.array(value).T.tolist()
-print("data :", data)
 
 products = data
 arr = []
 for product in products:
     vals = {}
     vals["Sensor No"] = str(int(product[1]))
-    vals["Temp"] = str(product[2])
+    vals["Temp"] = str(round(product[2], 2))
     vals["Time"] = str(time_data)
     arr.append(vals)
 
@@ -66,10 +63,17 @@ record_data = arr
 mycol.insert_many(record_data)
 
 documents = list(mycol.find({}, {'_id': 0}))
-print("documents :", documents)
-
 res = [list(idx.values()) for idx in documents]
-print("res : ", res)
+
+myquery = {"Sensor No": "16"}
+mydoc = mycol.find(myquery)
+for x in mydoc:
+    print("mydoc:", x)
+
+xs_doc = list(mycol.find({"Sensor No": "16"}, {'_id': 0}))
+
+xs_res = [list(idx.values()) for idx in xs_doc]
+print(xs_res)
 
 for index1, row in enumerate(res):
     for index2, item in enumerate(row):
@@ -77,12 +81,10 @@ for index1, row in enumerate(res):
             res[index1][index2] = (float(item))
         except ValueError:
             pass
-print("converted :", res)
+
 
 # myclient.drop_database('Modbus_Database')
 # mycol.delete_many({})
-
-
 # time.sleep(60)
 
 
@@ -97,19 +99,13 @@ root.grid()
 figure1 = plt.figure()
 plt.style.use('fivethirtyeight')
 ax = figure1.add_subplot(1, 1, 1)  # C
-xs = []
-ys = []
 
-index = count()
+nested_list = res
+xs = [sub[2] for sub in xs_res]
+ys = [sub[1] for sub in xs_res]
 
 
 def animate(i, xs, ys):
-    temp_c = round(get_random_number(), 2)
-
-    # Add x and y to lists
-    xs.append(next(index))
-    ys.append(temp_c)
-
     ax.clear()
     ax.plot(xs, ys, color='blue', marker='o', markerfacecolor='red')
 
@@ -117,7 +113,7 @@ def animate(i, xs, ys):
     plt.subplots_adjust(bottom=0.30)
     plt.title('Temperature over Time')
     plt.ylabel('Temperature °C')
-    plt.xlim(1, 50)
+    # plt.xlim(1, 50)
 
 
 canvas = FigureCanvasTkAgg(figure1, master=root)
@@ -154,7 +150,7 @@ treev.heading("3", text="Temperature °C")
 
 start_range = 0
 
-for record in res:
+for record in res[-50:]:
     treev.insert("", index='end', iid=start_range, values=(str(record[2]), int(record[0]), float(record[1])))
     start_range += 1
 
