@@ -1,6 +1,3 @@
-import plotly.express as px
-import pandas as pd
-import pandas as df
 import random
 import threading
 import tkinter as tk
@@ -18,8 +15,8 @@ import datetime
 import datetime as dt
 import time
 from tkinter import Tk
-import threading
-from time import time, sleep
+import plotly.express as px
+import pandas as pd
 
 sensor_no = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
 sensor_no.open()
@@ -42,7 +39,6 @@ data_bytes = np.array(dec_array, dtype=np.uint16)
 data_as_float = data_bytes.view(dtype=np.float32)
 
 time_data = dt.datetime.now().strftime('%Y-%m-%d %X')
-print("time_data", time_data)
 
 start = 1
 start_range = 50
@@ -61,6 +57,31 @@ for product in products:
     vals["Temp"] = str(round(product[2], 4))
     vals["Time"] = str(time_data)
     arr.append(vals)
+
+root = tk.Tk()
+root.title("Sensor's Temperatures °C")
+root.geometry("500x780")
+root.grid()
+
+
+def callback():
+    l2.configure(text=cmb.get())
+    print(cmb.get())
+
+
+course = [num for num in range(start, start + start_range)]
+
+l1 = Label(root, text="Choose Sensor No")
+l1.pack()
+cmb = ttk.Combobox(root, values=course, width=30)
+cmb.pack()
+cmb.current(0)
+
+btn = Button(root, text="Figure", command=callback)
+btn.pack()
+
+l2 = Label(root, text="")
+l2.pack()
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["Modbus_Database"]
@@ -88,16 +109,13 @@ for index1, row in enumerate(res):
 myquery = {"Time": {"$gte": "2021-05-31 13:14:58", "$lt": time_data}}
 mydoc = mycol.find(myquery)
 
-for x in mydoc:
-    print("mydoc:", x)
-
 mydoc_all = mycol.find()
 df = pd.DataFrame(list(mydoc_all))
 df.to_csv("abc.csv", sep=",")
 
 xs_doc = list(
     mycol.find(
-        {"$and": [{"Sensor No": "12"}, {"Time": {"$gte": "2021-05-31 13:14:58", "$lt": time_data}}]},
+        {"$and": [{"Sensor No": cmb.get()}, {"Time": {"$gte": "2021-05-31 13:14:58", "$lt": time_data}}]},
         {'_id': 0}))
 
 print(xs_doc)
@@ -118,7 +136,6 @@ xs = [sub[2] for sub in xs_res]
 ys = [sub[1] for sub in xs_res]
 
 df = pd.read_csv('C:/Users/halilerhan.orun/IdeaProjects/calisma1/sensor_no.csv')
-
 fig = px.line(df, x='Time', y='Temp', title='Date Series with Range Slider and Selectors')
 
 fig.update_xaxes(
@@ -134,4 +151,54 @@ fig.update_xaxes(
     )
 )
 
-fig.show()
+treev = ttk.Treeview(root)
+
+treev.pack(side='bottom', fill=tkinter.BOTH, expand=True)
+
+verscrlbar = ttk.Scrollbar(root,
+                           orient="vertical",
+                           command=treev.yview)
+
+treev.configure(xscrollcommand=verscrlbar.set)
+
+treev["columns"] = ("1", "2", "3")
+
+treev['show'] = 'headings'
+
+treev.column("1", width=125, minwidth=30, anchor='c')
+treev.column("2", width=65, minwidth=30, anchor='c')
+treev.column("3", width=115, minwidth=30, anchor='c')
+
+treev.heading("1", text="Time")
+treev.heading("2", text="Sensor No")
+treev.heading("3", text="Temperature °C")
+
+start_range = 0
+
+for record in res[-50:]:
+    treev.insert("", index='end', iid=start_range, values=(str(record[2]), int(record[0]), float(record[1])))
+    start_range += 1
+
+treev = ttk.Style()
+treev.configure('Treeview', rowheight=30)
+
+
+def _quit():
+    root.quit()
+    root.destroy()
+
+
+menu = Menu(root)
+root.config(menu=menu)
+filemenu = Menu(menu)
+menu.add_cascade(label='File', menu=filemenu)
+filemenu.add_command(label='New')
+filemenu.add_command(label='Open Calendar')
+filemenu.add_separator()
+filemenu.add_command(label='Exit', command=_quit)
+helpmenu = Menu(menu)
+menu.add_cascade(label='Figure', command=fig.show)
+helpmenu.add_command(label='About')
+
+if __name__ == '__main__':
+    root.mainloop()

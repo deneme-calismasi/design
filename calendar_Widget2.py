@@ -5,7 +5,6 @@
 This module contains a calendar widget.
 '''
 
-
 import datetime
 
 from tkinter import *
@@ -161,7 +160,7 @@ class CalendarWidget:
         days = 31
         x = 35
         y = 87
-        for i in range(1, days+1):
+        for i in range(1, days + 1):
             # Creates a button with disabled state
             button = ttk.Button(self.master, text=str(i), style='Day.TButton')
             button.configure(command=lambda btn=button: \
@@ -182,7 +181,7 @@ class CalendarWidget:
 
         # Hour selection fields
         ttk.Label(self.master, text='Hours').place(x=331, y=50)
-        hour_combobox = ttk.Combobox(self.master, width=3, values=[*range(0,24)])
+        hour_combobox = ttk.Combobox(self.master, width=3, values=[*range(0, 24)])
         hour_combobox.place(x=333, y=70)
         hour_combobox.bind('<<ComboboxSelected>>', self._load_time)
         self._hour_combobox = hour_combobox
@@ -190,7 +189,7 @@ class CalendarWidget:
         # Minutes selection fields
         ttk.Label(self.master, text='Minutes').place(x=388, y=50)
         minutes_combobox = ttk.Combobox(self.master, width=3, \
-                                        values=[*range(0,60)])
+                                        values=[*range(0, 60)])
         minutes_combobox.place(x=396, y=70)
         minutes_combobox.bind('<<ComboboxSelected>>', self._load_time)
         self._minutes_combobox = minutes_combobox
@@ -198,7 +197,7 @@ class CalendarWidget:
         # Seconds selection fields
         ttk.Label(self.master, text='Seconds').place(x=456, y=50)
         seconds_combobox = ttk.Combobox(self.master, width=3, \
-                                        values=[*range(0,60)])
+                                        values=[*range(0, 60)])
         seconds_combobox.place(x=467, y=70)
         seconds_combobox.bind('<<ComboboxSelected>>', self._load_time)
         self._seconds_combobox = seconds_combobox
@@ -213,7 +212,7 @@ class CalendarWidget:
 
         now = datetime.datetime.now()
 
-        years = [*range(1990, now.year+1)]
+        years = [*range(1990, now.year + 1)]
         years.reverse()
 
         self._year_combobox.configure(values=years)
@@ -234,7 +233,7 @@ class CalendarWidget:
                 days += 1
 
             i = 0
-            while i <= days-1:
+            while i <= days - 1:
                 # Enables days of a month
                 self._days_buttons[i].state(['!disabled'])
                 self._days_buttons[i].configure(style='Day.TButton')
@@ -259,7 +258,7 @@ class CalendarWidget:
 
         # Updates selected_date_label text
         month = self._month_combobox.get()
-        month = str(self._months.index(month)+1)
+        month = str(self._months.index(month) + 1)
         day = button.cget('text')
         year = self._year_combobox.get()
 
@@ -319,7 +318,7 @@ class CalendarWidget:
 
             date_time = {}
 
-            month = str(self._months.index(month)+1)
+            month = str(self._months.index(month) + 1)
             if int(month) < 10:
                 month = '0' + month
 

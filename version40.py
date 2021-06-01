@@ -1,6 +1,3 @@
-import plotly.express as px
-import pandas as pd
-import pandas as df
 import random
 import threading
 import tkinter as tk
@@ -18,8 +15,8 @@ import datetime
 import datetime as dt
 import time
 from tkinter import Tk
-import threading
-from time import time, sleep
+import plotly.express as px
+import pandas as pd
 
 sensor_no = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
 sensor_no.open()
@@ -118,7 +115,6 @@ xs = [sub[2] for sub in xs_res]
 ys = [sub[1] for sub in xs_res]
 
 df = pd.read_csv('C:/Users/halilerhan.orun/IdeaProjects/calisma1/sensor_no.csv')
-
 fig = px.line(df, x='Time', y='Temp', title='Date Series with Range Slider and Selectors')
 
 fig.update_xaxes(
@@ -134,4 +130,65 @@ fig.update_xaxes(
     )
 )
 
-fig.show()
+root = tk.Tk()
+root.title("Sensor's Temperatures °C")
+root.geometry("500x780")
+root.grid()
+
+treev = ttk.Treeview(root)
+
+treev.pack(side='bottom', fill=tkinter.BOTH, expand=True)
+
+verscrlbar = ttk.Scrollbar(root,
+                           orient="vertical",
+                           command=treev.yview)
+
+treev.configure(xscrollcommand=verscrlbar.set)
+
+treev["columns"] = ("1", "2", "3")
+
+treev['show'] = 'headings'
+
+treev.column("1", width=125, minwidth=30, anchor='c')
+treev.column("2", width=65, minwidth=30, anchor='c')
+treev.column("3", width=115, minwidth=30, anchor='c')
+
+treev.heading("1", text="Time")
+treev.heading("2", text="Sensor No")
+treev.heading("3", text="Temperature °C")
+
+start_range = 0
+
+for record in res[-50:]:
+    treev.insert("", index='end', iid=start_range, values=(str(record[2]), int(record[0]), float(record[1])))
+    start_range += 1
+
+treev = ttk.Style()
+treev.configure('Treeview', rowheight=30)
+
+
+def _quit():
+    root.quit()
+    root.destroy()
+
+
+current_value = tk.StringVar(value=1)
+sp = Spinbox(root, from_=1, to=50, textvariable=current_value, wrap=True)
+sp.pack(side="top", fill=tkinter.BOTH)
+
+
+
+menu = Menu(root)
+root.config(menu=menu)
+filemenu = Menu(menu)
+menu.add_cascade(label='File', menu=filemenu)
+filemenu.add_command(label='New')
+filemenu.add_command(label='Open Calendar')
+filemenu.add_separator()
+filemenu.add_command(label='Exit', command=_quit)
+helpmenu = Menu(menu)
+menu.add_cascade(label='Figure', command=fig.show)
+helpmenu.add_command(label='About')
+
+if __name__ == '__main__':
+    root.mainloop()
