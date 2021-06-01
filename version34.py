@@ -37,7 +37,7 @@ dec_array = regs
 data_bytes = np.array(dec_array, dtype=np.uint16)
 data_as_float = data_bytes.view(dtype=np.float32)
 
-time_data = dt.datetime.now().strftime('%m/%d/%Y, %X')
+time_data = dt.datetime.now().strftime('%Y-%m-%d %X')
 print("time_data", time_data)
 
 start = 1
@@ -87,14 +87,14 @@ def get_random_number():
 
 
 # myquery = {"Sensor No": "2"}
-myquery = {"Time": {"$gte": "05/24/2021, 08:02:51", "$lt": "05/25/2021, 08:02:51"}}
+myquery = {"Time": {"$gte": "2021-05-31 14:00:00", "$lt": time_data}}
 mydoc = mycol.find(myquery)
 for x in mydoc:
     print("mydoc:", x)
 
 xs_doc = list(
     mycol.find(
-        {"$and": [{"Sensor No": "2"}, {"Time": {"$gte": "05/24/2021, 08:02:51", "$lt": "05/25/2021, 08:02:51"}}]},
+        {"$and": [{"Sensor No": "2"}, {"Time": {"$gte": "2021-05-31 14:00:00", "$lt": time_data}}]},
         {'_id': 0}))
 print(xs_doc)
 xs_res = [list(idx.values()) for idx in xs_doc]

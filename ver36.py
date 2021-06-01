@@ -89,10 +89,6 @@ mydoc = mycol.find(myquery)
 for x in mydoc:
     print("mydoc:", x)
 
-data5 = mycol.find(myquery)
-d_f = pd.DataFrame(list(data5))
-
-
 time.sleep(1)
 
 xs_doc = list(
