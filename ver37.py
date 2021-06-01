@@ -18,6 +18,7 @@ import datetime
 import datetime as dt
 import time
 from tkinter import Tk
+import threading
 
 sensor_no = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
 sensor_no.open()
@@ -83,7 +84,7 @@ for index1, row in enumerate(res):
 # time.sleep(3)
 
 # myquery = {"Sensor No": "2"}
-myquery = {"Time": {"$gte": "2021-05-31 14:00:00", "$lt": time_data}}
+myquery = {"Time": {"$gte": "2021-05-31 13:14:58", "$lt": time_data}}
 mydoc = mycol.find(myquery)
 
 for x in mydoc:
@@ -95,7 +96,7 @@ df.to_csv("abc.csv", sep=",")
 
 xs_doc = list(
     mycol.find(
-        {"$and": [{"Sensor No": "12"}, {"Time": {"$gte": "2021-05-31 14:00:00", "$lt": time_data}}]},
+        {"$and": [{"Sensor No": "12"}, {"Time": {"$gte": "2021-05-31 13:14:58", "$lt": time_data}}]},
         {'_id': 0}))
 
 print(xs_doc)
@@ -131,4 +132,6 @@ fig.update_xaxes(
         ])
     )
 )
-fig.show()
+
+if __name__ == '__main__':
+    fig.show()
