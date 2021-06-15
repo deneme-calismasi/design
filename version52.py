@@ -86,6 +86,13 @@ def on_double_click(event):
     print(xs_doc)
     xs_res = [list(idx.values()) for idx in xs_doc]
 
+    for index1, row in enumerate(xs_res):
+        for index2, item in enumerate(row):
+            try:
+                xs_res[index1][index2] = (float(item))
+            except ValueError:
+                pass
+
     df = pd.DataFrame(list(xs_doc))
     df.to_csv("sensor_no.csv", sep=",")
     fig = px.line(df, x='Time', y='Temp', title='Temperature °C - Time', color='Sensor No')
@@ -105,13 +112,6 @@ def on_double_click(event):
     )
 
     fig.show()
-
-    for index1, row in enumerate(xs_res):
-        for index2, item in enumerate(row):
-            try:
-                xs_res[index1][index2] = (float(item))
-            except ValueError:
-                pass
 
 
 # myquery = {"Sensor No": "2"}
