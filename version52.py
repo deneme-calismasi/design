@@ -88,6 +88,23 @@ def on_double_click(event):
 
     df = pd.DataFrame(list(xs_doc))
     df.to_csv("sensor_no.csv", sep=",")
+    fig = px.line(df, x='Time', y='Temp', title='Temperature °C - Time', color='Sensor No')
+    # fig.data[0].update(mode='markers+lines')
+
+    fig.update_xaxes(
+        rangeslider_visible=True,
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1, label="1m", step="month", stepmode="backward"),
+                dict(count=3, label="3m", step="month", stepmode="backward"),
+                dict(count=6, label="6m", step="month", stepmode="todate"),
+                dict(count=1, label="1y", step="year", stepmode="backward"),
+                dict(step="all")
+            ])
+        )
+    )
+
+    fig.show()
 
     for index1, row in enumerate(xs_res):
         for index2, item in enumerate(row):
@@ -104,23 +121,6 @@ mydoc = mycol.find(myquery)
 mydoc_all = mycol.find()
 df = pd.DataFrame(list(mydoc_all))
 df.to_csv("abc.csv", sep=",")
-
-df = pd.read_csv('C:/Users/halilerhan.orun/IdeaProjects/calisma1/sensor_no.csv')
-fig = px.line(df, x='Time', y='Temp', title='Temperature °C - Time', color='Sensor No')
-# fig.data[0].update(mode='markers+lines')
-
-fig.update_xaxes(
-    rangeslider_visible=True,
-    rangeselector=dict(
-        buttons=list([
-            dict(count=1, label="1m", step="month", stepmode="backward"),
-            dict(count=3, label="3m", step="month", stepmode="backward"),
-            dict(count=6, label="6m", step="month", stepmode="todate"),
-            dict(count=1, label="1y", step="year", stepmode="backward"),
-            dict(step="all")
-        ])
-    )
-)
 
 root = tk.Tk()
 root.title("Sensor's Temperatures °C")
@@ -177,7 +177,7 @@ filemenu.add_command(label='Open Calendar')
 filemenu.add_separator()
 filemenu.add_command(label='Exit', command=_quit)
 helpmenu = Menu(menu)
-menu.add_cascade(label='Figure', command=fig.show)
+menu.add_cascade(label='Figure')
 helpmenu.add_command(label='About')
 
 if __name__ == '__main__':
