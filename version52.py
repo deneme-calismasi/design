@@ -93,13 +93,17 @@ def on_double_click(event):
             except ValueError:
                 pass
 
+    # df = pd.DataFrame(xs_doc)
+    print(xs_doc)
+    print(type(xs_doc))
     df = pd.DataFrame(xs_doc)
+    print(df)
     # df = pd.concat()
-    df = df.cumsum()
+    # df = df.cumsum()
     # df = pd.melt(df, Time_vars='Time', Temp_vars='Temp')
     # df.to_csv("sensor_no.csv", sep=",")
     # df = df.sort_values(by=(['Temp', 'Time']), ascending=[True, False])
-    fig = px.line(df, x=df.data_frame['Time'], y=df.data_frame['Temp'], title='Temperature °C - Time', color='Sensor No')
+    fig = px.line(df, x='Time', y='Temp', title='Temperature °C - Time', color='Sensor No')
     # fig.data[0].update(mode='markers+lines')
 
     fig.update_xaxes(
