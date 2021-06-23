@@ -11,6 +11,7 @@ import pandas as pd
 
 # import threading
 
+
 start_regs = 120
 sensor_no = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
 sensor_no.open()
@@ -93,9 +94,6 @@ def on_double_click(event):
             except ValueError:
                 pass
 
-    # df = pd.DataFrame(xs_doc)
-    print(xs_doc)
-    print(type(xs_doc))
     df = pd.DataFrame(xs_doc)
     print(df)
     # df = pd.concat()
