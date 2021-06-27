@@ -19,7 +19,7 @@ def display_weekday():
     rand = random.choice(words)
     character_frame = Label(contrive, text=rand)
     character_frame.pack()
-    contrive.after(500, display_weekday)
+    contrive.after(5000, display_weekday)
     words.remove(rand)
 
 

@@ -33,41 +33,10 @@ data_as_float = data_bytes.view(dtype=np.float32)
 
 time_data = dt.datetime.now().strftime('%Y-%m-%d %X')
 
-start = 1
-start_range = start_regs // 2
-
-value = [[num for num in range(start, start + start_range)],
-         [num for num in range(start, start + start_range)],
-         data_as_float]
-
-data = np.array(value).T.tolist()
-
-products = data
-arr = []
-for product in products:
-    vals = {}
-    vals["Sensor No"] = str(int(product[1]))
-    vals["Temp"] = str(round(product[2], 4))
-    vals["Time"] = str(time_data)
-    arr.append(vals)
-
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["Modbus_Database"]
 
 mycol = mydb["collection1"]
-
-record_data = arr
-mycol.insert_many(record_data)
-
-documents = list(mycol.find({}, {'_id': 0}))
-res = [list(idx.values()) for idx in documents]
-
-for index1, row in enumerate(res):
-    for index2, item in enumerate(row):
-        try:
-            res[index1][index2] = (float(item))
-        except ValueError:
-            pass
 
 
 # threading.Timer(2.0, fig.show).start()
@@ -158,13 +127,6 @@ tree.heading("3", text="Temperature °C")
 
 tree.bind("<Double-1>", on_double_click)
 
-start_range = 0
-
-for record in res[-(start_regs // 2):]:
-    tree.insert("", index='end', text="%s" % int(record[0]), iid=start_range,
-                values=(str(record[2]), int(record[0]), float(record[1])))
-    start_range += 1
-
 
 # tree = ttk.Style()
 # tree.configure('Treeview', rowheight=30)
@@ -187,5 +149,56 @@ helpmenu = Menu(menu)
 menu.add_cascade(label='Figure')
 helpmenu.add_command(label='About')
 
+
+def record_mongo():
+    start = 1
+    start_range = start_regs // 2
+
+    value = [[num for num in range(start, start + start_range)],
+             [num for num in range(start, start + start_range)],
+             data_as_float]
+
+    data = np.array(value).T.tolist()
+
+    products = data
+    arr = []
+
+    for product in products:
+        vals = {}
+        vals["Sensor No"] = str(int(product[1]))
+        vals["Temp"] = str(round(product[2], 4))
+        vals["Time"] = str(time_data)
+        arr.append(vals)
+
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["Modbus_Database"]
+
+    mycol = mydb["collection1"]
+
+    record_data = arr
+    mycol.insert_many(record_data)
+    documents = list(mycol.find({}, {'_id': 0}))
+    res = [list(idx.values()) for idx in documents]
+
+    for index1, row in enumerate(res):
+        for index2, item in enumerate(row):
+            try:
+                res[index1][index2] = (float(item))
+            except ValueError:
+                pass
+    return res
+
+
+def update():
+    start_range = 0
+
+    for record in record_mongo()[-(start_regs // 2):]:
+        tree.insert("", index='end', text="%s" % int(record[0]), iid=start_range,
+                    values=(str(record[2]), int(record[0]), float(record[1])))
+        start_range += 1
+    root.after(5000, update)
+
+
 if __name__ == '__main__':
+    root.after(5000, update)
     root.mainloop()
