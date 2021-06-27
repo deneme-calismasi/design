@@ -1,0 +1,1 @@
+df['CTR'] = df['CTR'].str.replace('%','').astype(np.float64)
