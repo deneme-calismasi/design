@@ -66,6 +66,7 @@ def on_double_click(event):
 
     df = pd.DataFrame(xs_doc)
     print(df)
+    df['Temp'] = df['Temp'].astype(np.float64)
     # df = pd.concat()
     # df = df.cumsum()
     # df = pd.melt(df, Time_vars='Time', Temp_vars='Temp')

@@ -9,8 +9,6 @@ import datetime as dt
 import plotly.express as px
 import pandas as pd
 
-# import threading
-
 start_regs = 120
 sensor_no = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
 sensor_no.open()
@@ -68,11 +66,6 @@ for index1, row in enumerate(res):
             pass
 
 
-# threading.Timer(2.0, fig.show).start()
-# myclient.drop_database('Modbus_Database')
-# mycol.delete_many({})
-# time.sleep(3)
-
 def on_double_click(event):
     item = tree.identify('item', event.x, event.y)
     print(tree.item(item, "text"))
@@ -86,9 +79,6 @@ def on_double_click(event):
     print(xs_doc)
     xs_res = [list(idx.values()) for idx in xs_doc]
 
-    df = pd.DataFrame(list(xs_doc))
-    df.to_csv("sensor_no.csv", sep=",")
-
     for index1, row in enumerate(xs_res):
         for index2, item in enumerate(row):
             try:
@@ -96,29 +86,31 @@ def on_double_click(event):
             except ValueError:
                 pass
 
+    df = pd.DataFrame(xs_doc)
+    df['Temp'] = df['Temp'].astype(np.float64)
+    fig = px.line(df, x='Time', y='Temp', title='Temperature °C - Time', color='Sensor No')
 
-# myquery = {"Sensor No": "2"}
+    fig.update_xaxes(
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1, label="1m", step="month", stepmode="backward"),
+                dict(count=3, label="3m", step="month", stepmode="backward"),
+                dict(count=6, label="6m", step="month", stepmode="todate"),
+                dict(count=1, label="1y", step="year", stepmode="backward"),
+                dict(step="all")
+            ])
+        )
+    )
+
+    fig.show()
+
+
 myquery = {"Time": {"$gte": "2021-05-31 13:14:58", "$lt": time_data}}
 mydoc = mycol.find(myquery)
 
 mydoc_all = mycol.find()
 df = pd.DataFrame(list(mydoc_all))
-df['Temp'] = df['Temp'].astype(np.float64)
-fig = px.line(df, x='Time', y='Temp', title='Temperature °C - Time', color='Sensor No')
-# fig.data[0].update(mode='markers+lines')
-
-fig.update_xaxes(
-    rangeslider_visible=True,
-    rangeselector=dict(
-        buttons=list([
-            dict(count=1, label="1m", step="month", stepmode="backward"),
-            dict(count=3, label="3m", step="month", stepmode="backward"),
-            dict(count=6, label="6m", step="month", stepmode="todate"),
-            dict(count=1, label="1y", step="year", stepmode="backward"),
-            dict(step="all")
-        ])
-    )
-)
+df.to_csv("abc.csv", sep=",")
 
 root = tk.Tk()
 root.title("Sensor's Temperatures °C")
@@ -157,10 +149,6 @@ for record in res[-(start_regs // 2):]:
     start_range += 1
 
 
-# tree = ttk.Style()
-# tree.configure('Treeview', rowheight=30)
-
-
 def _quit():
     root.quit()
     root.destroy()
@@ -175,7 +163,7 @@ filemenu.add_command(label='Open Calendar')
 filemenu.add_separator()
 filemenu.add_command(label='Exit', command=_quit)
 helpmenu = Menu(menu)
-menu.add_cascade(label='Figure', command=fig.show)
+menu.add_cascade(label='Figure')
 helpmenu.add_command(label='About')
 
 if __name__ == '__main__':

@@ -104,10 +104,8 @@ mydoc = mycol.find(myquery)
 
 mydoc_all = mycol.find()
 df = pd.DataFrame(list(mydoc_all))
+df['Temp'] = df['Temp'].astype(np.float64)
 
-df.to_csv("abc.csv", sep=",")
-
-df = pd.read_csv('C:/Users/halilerhan.orun/IdeaProjects/calisma1/sensor_no.csv')
 fig = px.line(df, x='Time', y='Temp', title='Temperature °C - Time', color='Sensor No')
 # fig.data[0].update(mode='markers+lines')
 

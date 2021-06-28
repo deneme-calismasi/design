@@ -9,8 +9,6 @@ import datetime as dt
 import plotly.express as px
 import pandas as pd
 
-# import threading
-
 start_regs = 120
 sensor_no = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
 sensor_no.open()
@@ -31,47 +29,11 @@ data_as_float = data_bytes.view(dtype=np.float32)
 
 time_data = dt.datetime.now().strftime('%Y-%m-%d %X')
 
-start = 1
-start_range = start_regs // 2
-
-value = [[num for num in range(start, start + start_range)],
-         [num for num in range(start, start + start_range)],
-         data_as_float]
-
-data = np.array(value).T.tolist()
-
-products = data
-arr = []
-for product in products:
-    vals = {}
-    vals["Sensor No"] = str(int(product[1]))
-    vals["Temp"] = str(round(product[2], 4))
-    vals["Time"] = str(time_data)
-    arr.append(vals)
-
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["Modbus_Database"]
 
 mycol = mydb["collection1"]
 
-record_data = arr
-mycol.insert_many(record_data)
-
-documents = list(mycol.find({}, {'_id': 0}))
-res = [list(idx.values()) for idx in documents]
-
-for index1, row in enumerate(res):
-    for index2, item in enumerate(row):
-        try:
-            res[index1][index2] = (float(item))
-        except ValueError:
-            pass
-
-
-# threading.Timer(2.0, fig.show).start()
-# myclient.drop_database('Modbus_Database')
-# mycol.delete_many({})
-# time.sleep(3)
 
 def on_double_click(event):
     item = tree.identify('item', event.x, event.y)
@@ -86,9 +48,6 @@ def on_double_click(event):
     print(xs_doc)
     xs_res = [list(idx.values()) for idx in xs_doc]
 
-    df = pd.DataFrame(list(xs_doc))
-    df.to_csv("sensor_no.csv", sep=",")
-
     for index1, row in enumerate(xs_res):
         for index2, item in enumerate(row):
             try:
@@ -96,29 +55,33 @@ def on_double_click(event):
             except ValueError:
                 pass
 
+    df = pd.DataFrame(xs_doc)
+    print(df)
+    df['Temp'] = df['Temp'].astype(np.float64)
+    fig = px.line(df, x='Time', y='Temp', title='Temperature °C - Time', color='Sensor No')
 
-# myquery = {"Sensor No": "2"}
+    fig.update_xaxes(
+        # rangeslider_visible=True,
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1, label="1m", step="month", stepmode="backward"),
+                dict(count=3, label="3m", step="month", stepmode="backward"),
+                dict(count=6, label="6m", step="month", stepmode="todate"),
+                dict(count=1, label="1y", step="year", stepmode="backward"),
+                dict(step="all")
+            ])
+        )
+    )
+
+    fig.show()
+
+
 myquery = {"Time": {"$gte": "2021-05-31 13:14:58", "$lt": time_data}}
 mydoc = mycol.find(myquery)
 
 mydoc_all = mycol.find()
 df = pd.DataFrame(list(mydoc_all))
-df['Temp'] = df['Temp'].astype(np.float64)
-fig = px.line(df, x='Time', y='Temp', title='Temperature °C - Time', color='Sensor No')
-# fig.data[0].update(mode='markers+lines')
-
-fig.update_xaxes(
-    rangeslider_visible=True,
-    rangeselector=dict(
-        buttons=list([
-            dict(count=1, label="1m", step="month", stepmode="backward"),
-            dict(count=3, label="3m", step="month", stepmode="backward"),
-            dict(count=6, label="6m", step="month", stepmode="todate"),
-            dict(count=1, label="1y", step="year", stepmode="backward"),
-            dict(step="all")
-        ])
-    )
-)
+df.to_csv("abc.csv", sep=",")
 
 root = tk.Tk()
 root.title("Sensor's Temperatures °C")
@@ -149,17 +112,6 @@ tree.heading("3", text="Temperature °C")
 
 tree.bind("<Double-1>", on_double_click)
 
-start_range = 0
-
-for record in res[-(start_regs // 2):]:
-    tree.insert("", index='end', text="%s" % int(record[0]), iid=start_range,
-                values=(str(record[2]), int(record[0]), float(record[1])))
-    start_range += 1
-
-
-# tree = ttk.Style()
-# tree.configure('Treeview', rowheight=30)
-
 
 def _quit():
     root.quit()
@@ -175,8 +127,59 @@ filemenu.add_command(label='Open Calendar')
 filemenu.add_separator()
 filemenu.add_command(label='Exit', command=_quit)
 helpmenu = Menu(menu)
-menu.add_cascade(label='Figure', command=fig.show)
+menu.add_cascade(label='Figure')
 helpmenu.add_command(label='About')
 
+
+def record_mongo():
+    start = 1
+    start_range = start_regs // 2
+
+    value = [[num for num in range(start, start + start_range)],
+             [num for num in range(start, start + start_range)],
+             data_as_float]
+
+    data = np.array(value).T.tolist()
+
+    products = data
+    arr = []
+
+    for product in products:
+        vals = {}
+        vals["Sensor No"] = str(int(product[1]))
+        vals["Temp"] = str(round(product[2], 4))
+        vals["Time"] = str(time_data)
+        arr.append(vals)
+
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["Modbus_Database"]
+
+    mycol = mydb["collection1"]
+
+    record_data = arr
+    mycol.insert_many(record_data)
+    documents = list(mycol.find({}, {'_id': 0}))
+    res = [list(idx.values()) for idx in documents]
+
+    for index1, row in enumerate(res):
+        for index2, item in enumerate(row):
+            try:
+                res[index1][index2] = (float(item))
+            except ValueError:
+                pass
+    return res
+
+
+def update():
+    start_range = 0
+
+    for record in record_mongo()[-(start_regs // 2):]:
+        tree.insert("", index='end', text="%s" % int(record[0]), iid=start_range,
+                    values=(str(record[2]), int(record[0]), float(record[1])))
+        start_range += 1
+    root.after(5000, update)
+
+
 if __name__ == '__main__':
+    root.after(5000, update)
     root.mainloop()
