@@ -9,6 +9,7 @@ import datetime as dt
 import plotly.express as px
 import pandas as pd
 
+
 start_regs = 120
 sensor_no = ModbusClient(host="192.40.50.107", port=10010, unit_id=1, auto_open=True)
 sensor_no.open()
