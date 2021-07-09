@@ -113,7 +113,6 @@ df['Temp'] = df['Temp'].astype(np.float64)
 
 root = tk.Tk()
 root.title("Sensor's Temperatures °C")
-# root.geometry("480x630")
 root.geometry()
 root.grid()
 
