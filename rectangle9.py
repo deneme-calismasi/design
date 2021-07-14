@@ -1,17 +1,19 @@
 from tkinter import *
 
 root = Tk()
-canvas = Canvas(root)
-canvas.pack()
-canvas.create_rectangle(0, 0, 100, 100, fill='red', tag='rect')
+
+canvas = Canvas(root, width=300, height=300, bg='white')
+canvas.pack(expand=YES, fill=BOTH)
+
+canvas.create_oval(1250, 625, 1500, 875, fill='blue', tag='circle')
 
 
 def task():
-    l = root.after(1000, task)
-    if int(l.split('#')[1]) % 2 == 0:
-        canvas.itemconfig('rect', fill='blue')
+    circle = root.after(500, task)
+    if int(circle.split('#')[1]) % 2 == 0:
+        canvas.itemconfig('circle', fill='blue')
     else:
-        canvas.itemconfig('rect', fill='red')
+        canvas.itemconfig('circle', fill='red')
 
 
 task()
