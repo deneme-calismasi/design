@@ -6,7 +6,7 @@ root.configure(background='#16e116')
 root.title('Pop Up')
 root.geometry('300x200')
 
-photo = PhotoImage(file="eae.png")
+photo = PhotoImage(file="../modbusOOP/elec.png")
 
 w = Label(root, image=photo)
 text = Label(root, text="Hello world!")
